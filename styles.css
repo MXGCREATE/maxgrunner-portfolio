@@ -219,3 +219,13 @@ button:focus-visible,a:focus-visible {outline:2px solid #eef1f0;outline-offset:4
 .about-link{margin-top:32px}.screening-video{aspect-ratio:16/9}
 .contact-cta{padding:16px 21px}
 }
+/* V3.3 — simplified hero, gallery and About */
+.intro-blurbs{display:block;max-width:900px}
+.intro-blurbs>p{max-width:880px}
+.about-copy p:last-child{margin-bottom:0}
+.client-logos .logo-chewy{filter:grayscale(1) invert(1) contrast(100)!important;mix-blend-mode:screen;opacity:1}
+@media(max-width:680px){
+.intro-blurbs{display:block}
+.intro-blurbs>p{max-width:100%}
+.about-story h2{color:#f1f1ee}
+}
