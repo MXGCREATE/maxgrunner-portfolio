@@ -261,3 +261,66 @@ button:focus-visible,a:focus-visible {outline:2px solid #eef1f0;outline-offset:4
 .work-heading h2{letter-spacing:-.035em}
 .work-heading h2 em{margin-left:0;letter-spacing:-.032em}
 }
+
+
+/* V3.6 — optical typography system for large Gordita display headlines.
+   Use whole-word kerning and comfortable line-height instead of ad hoc
+   letter-pair fixes. Keep existing copy, weights, colors and layout. */
+.name-lockup h1{
+  letter-spacing:-.018em;
+  line-height:1.1;
+  font-kerning:normal;
+}
+.name-lockup h1 span{
+  letter-spacing:-.018em;
+  margin-left:.03em;
+  font-kerning:normal;
+}
+.work-heading h2{
+  letter-spacing:-.020em;
+  line-height:1.10;
+  font-kerning:normal;
+}
+.work-heading h2 em{
+  letter-spacing:-.019em;
+  margin-left:0;
+  font-kerning:normal;
+}
+.about-story h2{
+  line-height:1.20;
+  letter-spacing:-.023em;
+  font-kerning:normal;
+}
+.contact-inner h2{
+  line-height:1.20;
+  letter-spacing:-.022em;
+  font-kerning:normal;
+}
+.contact-inner h2 em{
+  letter-spacing:-.015em;
+  font-kerning:normal;
+}
+.feature-title{
+  line-height:1.10;
+  letter-spacing:-.025em;
+  font-kerning:normal;
+}
+.screening-caption h2{
+  line-height:1.15;
+  letter-spacing:-.025em;
+  font-kerning:normal;
+}
+@media(max-width:680px){
+  .name-lockup h1{letter-spacing:-.018em;line-height:1.10}
+  .name-lockup h1 span{letter-spacing:-.018em;margin-left:.03em}
+  .work-heading h2{letter-spacing:-.020em;line-height:1.10}
+  .work-heading h2 em{letter-spacing:-.019em}
+  .about-story h2{line-height:1.20;letter-spacing:-.023em}
+  /* Size both lines against the longest word to prevent mobile clipping. */
+  .contact-inner h2{
+    font-size:clamp(36px,12vw,68px);
+    line-height:1.20;
+    letter-spacing:-.022em;
+  }
+  .contact-inner h2 em{letter-spacing:-.015em}
+}
