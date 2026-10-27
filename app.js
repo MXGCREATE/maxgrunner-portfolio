@@ -6,7 +6,7 @@ const ordered = all.slice().sort((a,b)=>{
  return ax-bx || a.id-b.id;
 });
 const featured=all.filter(p=>Number(p.featured_film_order)>0).sort((a,b)=>Number(a.featured_film_order)-Number(b.featured_film_order));
-let activeFeature=0, category='all', view='grid', screenList=[], screenIndex=0;
+let activeFeature=0, category='commercial', view='grid', screenList=[], screenIndex=0;
 const $=id=>document.getElementById(id);
 const fmt=n=>String(n).padStart(2,'0');
 const categoryLabels={commercial:'Commercial',documentary:'Documentary',culture:'Music & Culture'};
@@ -37,7 +37,7 @@ function renderFeatured(){
 }
 function entries(){return ordered.filter(p=>category==='all'||p.category_key===category)}
 function renderFilters(){
- const values=[['all','All work'],['commercial','Commercial'],['documentary','Documentary'],['culture','Music & culture']];const target=$('category-filters');target.innerHTML='';
+ const values=[['commercial','Commercial'],['documentary','Documentary'],['culture','Music & culture'],['all','All work']];const target=$('category-filters');target.innerHTML='';
  for(const [k,label] of values){const b=document.createElement('button');b.type='button';b.className='filter-button'+(k===category?' active':'');b.textContent=label;b.setAttribute('aria-pressed',k===category?'true':'false');b.addEventListener('click',()=>{category=k;renderWork()});target.append(b)}
 }
 function card(p,order){
