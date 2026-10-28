@@ -2,6 +2,7 @@
 'use strict';
 let all = Array.isArray(window.MAX_PROJECTS)?window.MAX_PROJECTS:[];
 let siteCopy={};
+let galleryOrder={};
 await Promise.all([
  (async()=>{
    try{
@@ -13,12 +14,41 @@ await Promise.all([
  })(),
  (async()=>{
    try{
+     const r=await fetch(new URL('./data/gallery-order.json',document.baseURI),{cache:'no-store'});
+     if(!r.ok)throw new Error('Gallery order unavailable');
+     const data=await r.json();
+     if(data&&typeof data==='object'&&!Array.isArray(data))galleryOrder=data;
+   }catch(e){console.warn('Using existing gallery order fallback.',e)}
+ })(),
+ (async()=>{
+   try{
      const r=await fetch(new URL('./data/site.json',document.baseURI),{cache:'no-store'});
      if(r.ok){const data=await r.json();if(data&&typeof data==='object')siteCopy=data}
    }catch(e){console.warn('Using built-in site copy.',e)}
  })()
 ]);
-const ordered=all;
+/* Keep the original All Work category-slot pattern, but let each category
+   have its own independently editable presentation order. Missing titles
+   (including newly added videos) remain visible after the ranked projects. */
+function applyCategoryOrder(items,orders){
+ const keys=['commercial','documentary','culture'];
+ const ranked={},cursor={};
+ for(const key of keys){
+  const requested=Array.isArray(orders[key])?orders[key]:[];
+  const rank=new Map();
+  requested.forEach((title,i)=>{if(typeof title==='string'&&!rank.has(title))rank.set(title,i)});
+  ranked[key]=items.filter(p=>p.category_key===key)
+   .map((project,index)=>({project,index}))
+   .sort((a,b)=>{
+    const ai=rank.has(a.project.title)?rank.get(a.project.title):Number.MAX_SAFE_INTEGER;
+    const bi=rank.has(b.project.title)?rank.get(b.project.title):Number.MAX_SAFE_INTEGER;
+    return ai-bi||a.index-b.index;
+   }).map(x=>x.project);
+  cursor[key]=0;
+ }
+ return items.map(p=>ranked[p.category_key]?ranked[p.category_key][cursor[p.category_key]++]:p);
+}
+const ordered=applyCategoryOrder(all,galleryOrder);
 const featured=all.filter(p=>Number(p.featured_film_order)>0).sort((a,b)=>Number(a.featured_film_order)-Number(b.featured_film_order));
 let activeFeature=0, category='commercial', view='grid', screenList=[], screenIndex=0;
 const $=id=>document.getElementById(id);
