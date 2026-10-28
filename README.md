@@ -51,3 +51,11 @@ The image path resolver supports both GitHub Pages' project subpath and a custom
 - Each featured slot should have one project. If you remove every featured project, the featured carousel will be hidden.
 - Keep your Vimeo videos' privacy/embed settings compatible with the custom domain.
 - For the unreleased Caleborate / Real Person Tour documentary, confirm the rights and approval to display it publicly.
+
+## Category-specific video ordering
+
+Use **Arrange Videos → Category order** in the Sveltia dashboard. Each of the three lists (Commercial, Documentary, Music & Culture) contains the matching video titles. Drag an item's handle to reorder it and select **Save**. This commits `data/gallery-order.json` and publishes through GitHub Pages.
+
+The public site applies each list **within the corresponding category filter**. In the All Work view, each category occupies the same slots as before, and its videos are reordered within those slots, preserving the overall interleaving of categories. A new video or one whose title no longer appears in the ordering file is still shown at the end of its category; add it to the list to choose an exact position.
+
+**Portfolio Videos** is still the place to add/edit/delete videos, select a category, and update Vimeo links or metadata. It also has Sveltia's built-in list reorder control, but use **Arrange Videos** for the intentional per-category published order. Avoid placing a title into two category lists. Renaming a project should be followed by a quick check that its title still appears in the matching Arrange Videos list.
