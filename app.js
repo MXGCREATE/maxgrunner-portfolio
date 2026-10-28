@@ -1,10 +1,24 @@
-(function(){
+(async function(){
 'use strict';
-const all = Array.isArray(window.MAX_PROJECTS)?window.MAX_PROJECTS:[];
-const ordered = all.slice().sort((a,b)=>{
- const ax=Number(a.selected_work_order)||999, bx=Number(b.selected_work_order)||999;
- return ax-bx || a.id-b.id;
-});
+let all = Array.isArray(window.MAX_PROJECTS)?window.MAX_PROJECTS:[];
+let siteCopy={};
+await Promise.all([
+ (async()=>{
+   try{
+     const r=await fetch(new URL('./data/projects.json',document.baseURI),{cache:'no-store'});
+     if(!r.ok)throw new Error('Projects request failed');
+     const data=await r.json();
+     if(Array.isArray(data))all=data;
+   }catch(e){console.warn('Using bundled project catalog fallback.',e)}
+ })(),
+ (async()=>{
+   try{
+     const r=await fetch(new URL('./data/site.json',document.baseURI),{cache:'no-store'});
+     if(r.ok){const data=await r.json();if(data&&typeof data==='object')siteCopy=data}
+   }catch(e){console.warn('Using built-in site copy.',e)}
+ })()
+]);
+const ordered=all;
 const featured=all.filter(p=>Number(p.featured_film_order)>0).sort((a,b)=>Number(a.featured_film_order)-Number(b.featured_film_order));
 let activeFeature=0, category='commercial', view='grid', screenList=[], screenIndex=0;
 const $=id=>document.getElementById(id);
@@ -12,7 +26,16 @@ const fmt=n=>String(n).padStart(2,'0');
 const categoryLabels={commercial:'Commercial',documentary:'Documentary',culture:'Music & Culture'};
 function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function safeHttps(url){try{const u=new URL(url);return u.protocol==='https:'?u.href:''}catch{return ''}}
-function imgSrc(p){const url=p.thumbnail_image_url||'';return (typeof url==='string' && url.startsWith('./assets/thumbnails/'))?url:(safeHttps(url)||p.preview_image_url||'')}
+function imgSrc(p){
+ const candidate=p.uploaded_thumbnail||p.thumbnail_image_url||'';
+ const url=String(candidate||'').trim();
+ if(url.startsWith('./assets/')||url.startsWith('assets/'))return new URL(url,document.baseURI).href;
+ // CMS saves uploads with a root-relative path. Normalize it so it also works
+ // at the GitHub Pages project subpath and later at the custom domain root.
+ if(url.startsWith('/assets/'))return new URL('.'+url,document.baseURI).href;
+ if(url.startsWith('/maxgrunner-portfolio/assets/'))return new URL('./'+url.split('/assets/')[1].replace(/^/,'assets/'),document.baseURI).href;
+ return safeHttps(url)||p.preview_image_url||'';
+}
 function assignImage(img,p){
  const remote=imgSrc(p),backup=p.preview_image_url||'';
  img.alt='Thumbnail for '+p.title;
@@ -60,10 +83,27 @@ function renderWork(){
  renderFilters();
 }
 function videoEmbed(p){
- const url=safeHttps(p.vimeo_embed_url);
- if(url && new URL(url).hostname==='player.vimeo.com')return url;
+ const source=safeHttps(p.vimeo_url);
+ if(source){
+  const u=new URL(source),host=u.hostname.toLowerCase(),parts=u.pathname.split('/').filter(Boolean);
+  if(['vimeo.com','www.vimeo.com','player.vimeo.com'].includes(host)){
+   const id=host==='player.vimeo.com'&&parts[0]==='video'?parts[1]:parts[0];
+   const hash=(host==='player.vimeo.com'?u.searchParams.get('h'):parts[1])||u.searchParams.get('h')||'';
+   if(/^\d+$/.test(id||'')){
+    const player=new URL('https://player.vimeo.com/video/'+id);
+    if(/^[a-f0-9]{6,}$/.test(hash))player.searchParams.set('h',hash);
+    return player.href;
+   }
+  }
+ }
+ const existing=safeHttps(p.vimeo_embed_url);
+ if(existing && new URL(existing).hostname==='player.vimeo.com')return existing;
  const yt=safeHttps(p.youtube_url);
- if(yt && (new URL(yt).hostname==='www.youtube.com'||new URL(yt).hostname==='youtube.com'))return 'https://www.youtube-nocookie.com/embed/'+new URL(yt).searchParams.get('v');
+ if(yt){
+  const u=new URL(yt),host=u.hostname.toLowerCase();
+  const id=host==='youtu.be'?u.pathname.split('/').filter(Boolean)[0]:(host==='youtube.com'||host==='www.youtube.com'?u.searchParams.get('v'):null);
+  if(id&&/^[A-Za-z0-9_-]{11}$/.test(id))return 'https://www.youtube-nocookie.com/embed/'+id;
+ }
  return '';
 }
 function populateScreen(){
@@ -78,10 +118,10 @@ function populateScreen(){
  else{const fallback=document.createElement('div');fallback.className='screening-fallback';fallback.textContent='Video currently unavailable.';holder.append(fallback)}
  $('screening-prev').disabled=screenList.length<2;$('screening-next').disabled=screenList.length<2;
 }
-function openScreen(p,list){screenList=list.slice();screenIndex=screenList.findIndex(x=>x.original_id===p.original_id);if(screenIndex<0){screenList=[p];screenIndex=0}populateScreen();const dialog=$('screening');if(!dialog.open)dialog.showModal();}
+function openScreen(p,list){screenList=list.slice();screenIndex=screenList.indexOf(p);if(screenIndex<0){screenList=[p];screenIndex=0}populateScreen();const dialog=$('screening');if(!dialog.open)dialog.showModal();}
 function shiftScreen(d){screenIndex=(screenIndex+d+screenList.length)%screenList.length;populateScreen()}
 $('feature-play').addEventListener('click',()=>{if(featured.length)openScreen(featured[activeFeature],featured)});
-$('feature-next').addEventListener('click',()=>{activeFeature=(activeFeature+1)%featured.length;renderFeatured()});
+$('feature-next').addEventListener('click',()=>{if(featured.length){activeFeature=(activeFeature+1)%featured.length;renderFeatured()}});
 $('grid-toggle').addEventListener('click',()=>{view='grid';renderWork()});
 $('index-toggle').addEventListener('click',()=>{view='index';renderWork()});
 $('screening-close').addEventListener('click',()=>$('screening').close());
@@ -90,6 +130,52 @@ $('screening-prev').addEventListener('click',()=>shiftScreen(-1));
 $('screening').addEventListener('close',()=>{$('screening-player').replaceChildren()});
 $('screening').addEventListener('click',e=>{if(e.target===$('screening'))$('screening').close()});
 document.addEventListener('keydown',e=>{if($('screening').open){if(e.key==='ArrowRight')shiftScreen(1);else if(e.key==='ArrowLeft')shiftScreen(-1)}});
+
+function applySiteCopy(c){
+ if(!c||typeof c!=='object')return;
+ const set=(id,key)=>{const el=$(id);if(el&&typeof c[key]==='string')el.textContent=c[key]};
+ set('hero-eyebrow','hero_eyebrow');
+ set('hero-subtitle','hero_subtitle');
+ const name=$('main-title');
+ if(name){
+  if(typeof c.hero_name_bold==='string'&&name.firstChild)name.firstChild.textContent=c.hero_name_bold;
+  if(typeof c.hero_name_light==='string'&&name.querySelector('span'))name.querySelector('span').textContent=c.hero_name_light;
+ }
+ set('feature-badge','featured_badge');
+ set('feature-caption','featured_caption');
+ set('logos-caption','logos_caption');
+ set('work-kicker-text','work_section_label');
+ const work=$('work-title');
+ if(work){
+  if(typeof c.work_heading_lead==='string'&&work.firstChild)work.firstChild.textContent=c.work_heading_lead+' ';
+  if(typeof c.work_heading_tail==='string'&&work.querySelector('em'))work.querySelector('em').textContent=c.work_heading_tail;
+ }
+ set('about-kicker-text','about_section_label');
+ if(typeof c.about_headline==='string'){
+  const title=$('about-title');
+  if(title){
+   title.replaceChildren();
+   const lines=c.about_headline.split(/\r?\n/);
+   lines.forEach((line,i)=>{if(i)title.append(document.createElement('br'));title.append(document.createTextNode(line))});
+  }
+ }
+ ['bio1','bio2','bio3'].forEach((field,i)=>{
+   const p=document.querySelectorAll('.about-copy p')[i];
+   if(p&&typeof c[field]==='string')p.textContent=c[field];
+ });
+ set('contact-kicker-text','contact_section_label');
+ const contact=$('contact-headline');
+ if(contact&&(typeof c.contact_headline_bold==='string'||typeof c.contact_headline_light==='string')){
+   const bold=typeof c.contact_headline_bold==='string'?c.contact_headline_bold:"LET'S MAKE";
+   const light=typeof c.contact_headline_light==='string'?c.contact_headline_light:"SOMETHING.";
+   const em=document.createElement('em');em.textContent=light;
+   contact.replaceChildren(document.createTextNode(bold),document.createElement('br'),em);
+ }
+ set('contact-intro','contact_intro');
+ set('contact-button','contact_button');
+ set('footer-tagline','footer_tagline');
+}
 $('copyright-year').textContent=new Date().getFullYear();
+applySiteCopy(siteCopy);
 renderFeatured();renderWork();
 })();
