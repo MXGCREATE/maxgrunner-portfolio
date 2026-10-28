@@ -327,3 +327,160 @@ button:focus-visible,a:focus-visible {outline:2px solid #eef1f0;outline-offset:4
 
 /* CMS site copy: preserve the intentional two-line company-strip label. */
 #logos-caption{white-space:pre-line}
+
+
+/* V3.7 — iPhone-first layout refinement; desktop rules unchanged */
+@media (max-width: 680px) {
+  /* Legible, purposeful margins and tap targets */
+  .wrap { width: calc(100% - 40px); }
+  .site-header {
+    height: 76px;
+    flex-wrap: nowrap;
+    gap: 12px;
+  }
+  .brand-mark { width: 44px; height: 44px; flex: 0 0 44px; font-size: 17px; }
+  .primary-nav { gap: clamp(8px, 3.2vw, 18px); flex-wrap: nowrap; }
+  .primary-nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    white-space: nowrap;
+    font-size: clamp(11px, 3vw, 13px);
+    letter-spacing: -.02em;
+  }
+  .arrow-accent { font-size: 15px; margin-left: 3px; }
+
+  /* A compact but confident first fold */
+  .intro { padding-top: 32px; }
+  .intro-topline { font-size: 9px; line-height: 1.5; letter-spacing: .09em; }
+  .name-lockup { margin: 24px 0 16px; align-items: center; gap: 4px; }
+  .name-lockup h1 {
+    font-size: clamp(40px, 10.6vw, 69px);
+    line-height: 1.12;
+    white-space: nowrap;
+    letter-spacing: -.025em;
+  }
+  .name-lockup h1 span { letter-spacing: -.025em; margin-left: .025em; }
+  .asterisk { font-size: clamp(17px, 4vw, 23px); padding-left: 0; flex-shrink: 0; }
+  .intro-blurbs { padding-bottom: 30px; }
+  .intro-blurbs p { font-size: clamp(17px, 4.2vw, 20px); line-height: 1.38; letter-spacing: -.035em; }
+
+  /* Featured film: recognizable artwork + larger, more usable controls */
+  .feature-frame { aspect-ratio: 1.28; min-height: 0; background: #1d2327; }
+  .feature-image { display: block; z-index: 0; object-position: center; }
+  .feature-vignette { z-index: 0; pointer-events: none; background: linear-gradient(to bottom,rgba(0,0,0,.12) 0%,rgba(0,0,0,0) 38%,rgba(0,0,0,.7) 100%); }
+  .feature-top { padding: 15px; }
+  .feature-badge { font-size: 9px; padding: 10px 12px; line-height: 1.3; }
+  .feature-bottom { inset: auto 15px 16px; gap: 10px; }
+  .feature-title { font-size: clamp(34px, 9.4vw, 49px); line-height: 1.07; }
+  .feature-subtitle { font-size: 9px; margin-top: 10px; line-height: 1.35; }
+  .play-film { width: 72px; height: 72px; flex: 0 0 72px; }
+  .play-film small { font-size: 9px; }
+  .feature-controls { height: auto; min-height: 78px; flex-wrap: nowrap; gap: 10px; padding: 10px 0; }
+  .feature-controls > span:first-child { font-size: 10px; flex: 0 0 auto; }
+  .feature-tabs {
+    min-width: 0;
+    flex: 1 1 auto;
+    margin-left: 5px;
+    gap: 18px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .feature-tabs::-webkit-scrollbar { display: none; }
+  .feature-tab { font-size: 12px; min-height: 44px; flex: 0 0 auto; white-space: nowrap; }
+  .feature-arrow { font-size: 26px; min-width: 44px; min-height: 44px; flex: 0 0 44px; }
+
+  /* Client marks need a real mobile layout, not a shrunken desktop row */
+  .client-strip { display: block; padding: 33px 0 41px; }
+  #logos-caption { display: block; font-size: 10px; line-height: 1.5; }
+  .client-logos {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: center;
+    justify-items: start;
+    gap: 25px 22px;
+    margin-top: 23px;
+  }
+  .client-logos img {
+    max-width: 100%;
+    max-height: 38px;
+    opacity: .9;
+    filter: brightness(0) invert(1);
+  }
+  .client-logos .logo-chewy { width: 125px; max-height: 46px; filter: none!important; }
+  .client-logos .logo-bose { width: 116px; }
+  .client-logos .logo-eagle { width: 130px; max-height: 30px; }
+  .client-logos .logo-masters { width: 130px; }
+  .client-logos .logo-elite { width: 111px; }
+
+  /* Each film gets its own full-width editorial treatment */
+  .works { padding: 56px 0 85px; }
+  .work-kicker { font-size: 10px; }
+  .work-heading { margin: 22px 0 13px; }
+  .work-heading h2 { font-size: clamp(50px, 13vw, 76px); }
+  .view-switch { justify-content: flex-start; gap: 8px; margin-top: 15px; }
+  .view-button { min-height: 42px; padding: 10px 13px; font-size: 12px; border: 1px solid #4b5256; }
+  .view-button.active { border-color: #c6cbca; }
+  .view-button span { font-size: 15px; margin-right: 4px; }
+  .filters {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    margin-right: -20px;
+    padding: 5px 20px 21px 0;
+    gap: 8px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .filters::-webkit-scrollbar { display: none; }
+  .filter-button { flex: 0 0 auto; padding: 11px 13px; min-height: 44px; font-size: 12px; }
+  .projects-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 41px;
+    padding-top: 28px;
+  }
+  .thumbnail-wrap { aspect-ratio: 16/10; }
+  .work-metadata { font-size: 10px; line-height: 1.5; margin: 14px 0 8px; }
+  .work-title-line { gap: 16px; }
+  .work-title-line h3 { font-size: clamp(21px, 5.8vw, 27px); line-height: 1.18; }
+  .work-title-line .arrow { font-size: 23px; }
+  .work-role { font-size: 13px; line-height: 1.45; margin-top: 7px; }
+  .index-row { min-height: 66px; }
+  .index-title { font-size: 18px; }
+
+  /* About and contact: easier to read, with room to breathe */
+  .about-panel { padding: 68px 0 75px; }
+  .about-topline { font-size: 10px; }
+  .about-grid { gap: 34px; margin-top: 29px; }
+  .about-portrait { max-width: 420px; }
+  .about-portrait figcaption { font-size: 9px; }
+  .about-story h2 { font-size: clamp(39px, 9.9vw, 55px); margin-bottom: 24px; }
+  .about-copy p { font-size: 17px; line-height: 1.6; margin-bottom: 22px; }
+  .contact-panel { padding: 70px 0 76px; }
+  .contact-inner h2 { font-size: clamp(40px, 11.6vw, 65px); line-height: 1.12; }
+  .contact-inner p { font-size: 18px; }
+  .contact-action-row { gap: 22px; }
+  .contact-cta { min-height: 48px; padding: 15px 21px; font-size: 12px; }
+  .site-footer { font-size: 10px; line-height: 1.5; gap: 11px; padding-top: 28px; padding-bottom: 32px; }
+
+  /* Video screening controls remain reachable on iPhone */
+  .screening-header { padding: 13px 16px; }
+  .screening-header .micro { font-size: 9px; }
+  .screening-header button { min-height: 44px; padding: 8px; }
+  .screening-info { padding: 22px 18px 24px; }
+  .screening-caption h2 { font-size: clamp(33px, 9vw, 45px); }
+  .screening-caption p { font-size: 15px; line-height: 1.55; }
+  .screening-facts { gap: 27px; flex-wrap: wrap; }
+  .screening-footer { padding: 13px 18px; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .screening-footer > div { gap: 15px; flex-wrap: wrap; }
+  .screening-footer a, .screening-footer button { display: inline-flex; align-items: center; min-height: 44px; font-size: 11px; }
+}
+@media (max-width: 360px) {
+  .wrap { width: calc(100% - 32px); }
+  .primary-nav { gap: 8px; }
+  .primary-nav a { font-size: 11px; }
+  .name-lockup h1 { font-size: clamp(36px, 10.1vw, 42px); }
+  .intro-topline { font-size: 8px; }
+  .feature-title { font-size: 34px; }
+  .filters { margin-right: -16px; padding-right: 16px; }
+}
