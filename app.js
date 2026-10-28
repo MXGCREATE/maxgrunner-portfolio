@@ -74,21 +74,16 @@ function assignImage(img,p){
  img.onload=()=>{img.style.display='block';if(img.nextElementSibling?.classList.contains('thumb-placeholder'))img.nextElementSibling.classList.add('hidden')};
  img.src=remote;
 }
-/* Use bundled stills on phones for the first two featured films.
-   The external Squarespace thumbnail can otherwise leave the mobile hero blank.
-   Desktop and the remaining featured film keep their existing source behavior. */
+/* Featured films use the same full-resolution artwork as the gallery.
+   Keep the smaller bundled stills as phone-only error fallbacks, rather than
+   stretching them across the hero on high-density screens. */
 function assignFeaturedImage(img,p){
  const mobile=window.matchMedia('(max-width:680px)').matches;
- const local=mobile?({
+ const backup=mobile?({
   'Get Real: Pool Day':'./assets/previews/pool-day.jpg',
   'Get Real: Skater Dog':'./assets/previews/skater-dog.jpg'
  })[p.title]:null;
- if(!local){assignImage(img,p);return}
- img.alt='Film still for '+p.title;
- img.onload=()=>{img.style.display='block'};
- img.onerror=()=>assignImage(img,p);
- img.style.display='block';
- img.src=new URL(local,document.baseURI).href;
+ assignImage(img,backup&&!p.preview_image_url?{...p,preview_image_url:backup}:p);
 }
 function renderFeatured(){
  if(!featured.length){$('feature-frame').hidden=true;return}
@@ -225,3 +220,4 @@ $('copyright-year').textContent=new Date().getFullYear();
 applySiteCopy(siteCopy);
 renderFeatured();renderWork();
 })();
+
