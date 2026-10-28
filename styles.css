@@ -324,3 +324,6 @@ button:focus-visible,a:focus-visible {outline:2px solid #eef1f0;outline-offset:4
   }
   .contact-inner h2 em{letter-spacing:-.015em}
 }
+
+/* CMS site copy: preserve the intentional two-line company-strip label. */
+#logos-caption{white-space:pre-line}
