@@ -16,10 +16,302 @@ collections:
   - name: work
     label: Portfolio Videos
     label_singular: Video
-    description: Edit videos here. Drag and drop to reorder the public portfolio; edits publish through GitHub Pages.
+    description: Add or edit video details here. Use Arrange Videos for category-specific drag-and-drop ordering.
     file: /data/projects.json
     identifier_field: title
     summary: "{{title}} — {{brand}}"
+    view_filters:
+      - label: Commercial
+        field: category_key
+        pattern: '^commercial    fields:
+      - { name: title, label: Project title, widget: string, required: true }
+      - { name: brand, label: Client / brand, widget: string, required: false }
+      - { name: description, label: Screening Room description, widget: text, required: false }
+      - { name: roles, label: Your role / credits, widget: string, required: false }
+      - { name: year, label: Year, widget: string, required: false }
+      - name: category_key
+        label: Portfolio category
+        widget: select
+        options:
+          - { label: Commercial, value: commercial }
+          - { label: Documentary, value: documentary }
+          - { label: Music & Culture, value: culture }
+        default: commercial
+      - name: vimeo_url
+        label: Vimeo link
+        widget: string
+        required: false
+        hint: Paste the Vimeo page URL, including the unlisted hash if applicable. The site creates its player URL automatically.
+      - name: youtube_url
+        label: YouTube link (optional)
+        widget: string
+        required: false
+      - name: thumbnail_image_url
+        label: Existing thumbnail URL
+        widget: string
+        required: false
+        hint: Paste an HTTPS image URL, or use the image uploader below instead.
+      - name: uploaded_thumbnail
+        label: Upload new thumbnail
+        widget: image
+        required: false
+        hint: Uploaded images are saved to this GitHub repo. An upload overrides any thumbnail URL above.
+      - name: featured_film_order
+        label: Featured carousel position (1–3)
+        widget: number
+        value_type: int
+        required: false
+        min: 1
+        max: 3
+        unique: true
+        hint: Leave empty for gallery only. Each featured position should be assigned to one video.
+  - name: category_order
+    label: Arrange Videos
+    description: Change the order separately for Commercial, Documentary, and Music & Culture. All Work respects these orders too.
+    files:
+      - name: gallery
+        label: Category order
+        file: /data/gallery-order.json
+        format: json
+        fields:
+          - name: commercial
+            label: "01 / Commercial"
+            widget: list
+            label_singular: video
+            required: false
+            allow_duplicate: false
+            allow_reorder: true
+            hint: "Drag the handle on each video to change its order. New videos can be added from the picker; they otherwise appear after the listed videos."
+            field:
+              name: video
+              label: Video
+              widget: relation
+              collection: work
+              value_field: title
+              search_fields: [title, brand]
+              display_fields: [title]
+              filters:
+                - field: category_key
+                  values: [commercial]
+          - name: documentary
+            label: "02 / Documentary"
+            widget: list
+            label_singular: video
+            required: false
+            allow_duplicate: false
+            allow_reorder: true
+            hint: "Drag the handle on each video to change its order. New videos can be added from the picker; they otherwise appear after the listed videos."
+            field:
+              name: video
+              label: Video
+              widget: relation
+              collection: work
+              value_field: title
+              search_fields: [title, brand]
+              display_fields: [title]
+              filters:
+                - field: category_key
+                  values: [documentary]
+          - name: culture
+            label: "03 / Music & Culture"
+            widget: list
+            label_singular: video
+            required: false
+            allow_duplicate: false
+            allow_reorder: true
+            hint: "Drag the handle on each video to change its order. New videos can be added from the picker; they otherwise appear after the listed videos."
+            field:
+              name: video
+              label: Video
+              widget: relation
+              collection: work
+              value_field: title
+              search_fields: [title, brand]
+              display_fields: [title]
+              filters:
+                - field: category_key
+                  values: [culture]
+  - name: site_copy
+    label: Site Text
+    description: Edit homepage headlines, biography, gallery labels and contact copy.
+    files:
+      - name: homepage
+        label: Homepage / About / Contact
+        file: /data/site.json
+        format: json
+        fields:
+          - { name: hero_eyebrow, label: Homepage eyebrow, widget: string }
+          - { name: hero_name_bold, label: Large name — bold part, widget: string }
+          - { name: hero_name_light, label: Large name — light part, widget: string }
+          - { name: hero_subtitle, label: Homepage subtitle, widget: string }
+          - { name: featured_badge, label: Featured carousel badge, widget: string }
+          - { name: featured_caption, label: Featured carousel caption, widget: string }
+          - { name: logos_caption, label: Brand logos caption, widget: string }
+          - { name: work_section_label, label: Work section eyebrow, widget: string }
+          - { name: work_heading_lead, label: Work headline — bold part, widget: string }
+          - { name: work_heading_tail, label: Work headline — light part, widget: string }
+          - { name: about_section_label, label: About section eyebrow, widget: string }
+          - { name: about_headline, label: About headline (three lines), widget: text }
+          - { name: bio1, label: Biography paragraph 1, widget: text }
+          - { name: bio2, label: Biography paragraph 2, widget: text }
+          - { name: bio3, label: Biography paragraph 3, widget: text }
+          - { name: contact_section_label, label: Contact section eyebrow, widget: string }
+          - { name: contact_headline_bold, label: Contact headline — first line, widget: string }
+          - { name: contact_headline_light, label: Contact headline — second line, widget: string }
+          - { name: contact_intro, label: Contact introduction, widget: string }
+          - { name: contact_button, label: Contact button text, widget: string }
+          - { name: footer_tagline, label: Footer tagline, widget: string }
+
+      - label: Documentary
+        field: category_key
+        pattern: '^documentary    fields:
+      - { name: title, label: Project title, widget: string, required: true }
+      - { name: brand, label: Client / brand, widget: string, required: false }
+      - { name: description, label: Screening Room description, widget: text, required: false }
+      - { name: roles, label: Your role / credits, widget: string, required: false }
+      - { name: year, label: Year, widget: string, required: false }
+      - name: category_key
+        label: Portfolio category
+        widget: select
+        options:
+          - { label: Commercial, value: commercial }
+          - { label: Documentary, value: documentary }
+          - { label: Music & Culture, value: culture }
+        default: commercial
+      - name: vimeo_url
+        label: Vimeo link
+        widget: string
+        required: false
+        hint: Paste the Vimeo page URL, including the unlisted hash if applicable. The site creates its player URL automatically.
+      - name: youtube_url
+        label: YouTube link (optional)
+        widget: string
+        required: false
+      - name: thumbnail_image_url
+        label: Existing thumbnail URL
+        widget: string
+        required: false
+        hint: Paste an HTTPS image URL, or use the image uploader below instead.
+      - name: uploaded_thumbnail
+        label: Upload new thumbnail
+        widget: image
+        required: false
+        hint: Uploaded images are saved to this GitHub repo. An upload overrides any thumbnail URL above.
+      - name: featured_film_order
+        label: Featured carousel position (1–3)
+        widget: number
+        value_type: int
+        required: false
+        min: 1
+        max: 3
+        unique: true
+        hint: Leave empty for gallery only. Each featured position should be assigned to one video.
+  - name: site_copy
+    label: Site Text
+    description: Edit homepage headlines, biography, gallery labels and contact copy.
+    files:
+      - name: homepage
+        label: Homepage / About / Contact
+        file: /data/site.json
+        format: json
+        fields:
+          - { name: hero_eyebrow, label: Homepage eyebrow, widget: string }
+          - { name: hero_name_bold, label: Large name — bold part, widget: string }
+          - { name: hero_name_light, label: Large name — light part, widget: string }
+          - { name: hero_subtitle, label: Homepage subtitle, widget: string }
+          - { name: featured_badge, label: Featured carousel badge, widget: string }
+          - { name: featured_caption, label: Featured carousel caption, widget: string }
+          - { name: logos_caption, label: Brand logos caption, widget: string }
+          - { name: work_section_label, label: Work section eyebrow, widget: string }
+          - { name: work_heading_lead, label: Work headline — bold part, widget: string }
+          - { name: work_heading_tail, label: Work headline — light part, widget: string }
+          - { name: about_section_label, label: About section eyebrow, widget: string }
+          - { name: about_headline, label: About headline (three lines), widget: text }
+          - { name: bio1, label: Biography paragraph 1, widget: text }
+          - { name: bio2, label: Biography paragraph 2, widget: text }
+          - { name: bio3, label: Biography paragraph 3, widget: text }
+          - { name: contact_section_label, label: Contact section eyebrow, widget: string }
+          - { name: contact_headline_bold, label: Contact headline — first line, widget: string }
+          - { name: contact_headline_light, label: Contact headline — second line, widget: string }
+          - { name: contact_intro, label: Contact introduction, widget: string }
+          - { name: contact_button, label: Contact button text, widget: string }
+          - { name: footer_tagline, label: Footer tagline, widget: string }
+
+      - label: Music & Culture
+        field: category_key
+        pattern: '^culture    fields:
+      - { name: title, label: Project title, widget: string, required: true }
+      - { name: brand, label: Client / brand, widget: string, required: false }
+      - { name: description, label: Screening Room description, widget: text, required: false }
+      - { name: roles, label: Your role / credits, widget: string, required: false }
+      - { name: year, label: Year, widget: string, required: false }
+      - name: category_key
+        label: Portfolio category
+        widget: select
+        options:
+          - { label: Commercial, value: commercial }
+          - { label: Documentary, value: documentary }
+          - { label: Music & Culture, value: culture }
+        default: commercial
+      - name: vimeo_url
+        label: Vimeo link
+        widget: string
+        required: false
+        hint: Paste the Vimeo page URL, including the unlisted hash if applicable. The site creates its player URL automatically.
+      - name: youtube_url
+        label: YouTube link (optional)
+        widget: string
+        required: false
+      - name: thumbnail_image_url
+        label: Existing thumbnail URL
+        widget: string
+        required: false
+        hint: Paste an HTTPS image URL, or use the image uploader below instead.
+      - name: uploaded_thumbnail
+        label: Upload new thumbnail
+        widget: image
+        required: false
+        hint: Uploaded images are saved to this GitHub repo. An upload overrides any thumbnail URL above.
+      - name: featured_film_order
+        label: Featured carousel position (1–3)
+        widget: number
+        value_type: int
+        required: false
+        min: 1
+        max: 3
+        unique: true
+        hint: Leave empty for gallery only. Each featured position should be assigned to one video.
+  - name: site_copy
+    label: Site Text
+    description: Edit homepage headlines, biography, gallery labels and contact copy.
+    files:
+      - name: homepage
+        label: Homepage / About / Contact
+        file: /data/site.json
+        format: json
+        fields:
+          - { name: hero_eyebrow, label: Homepage eyebrow, widget: string }
+          - { name: hero_name_bold, label: Large name — bold part, widget: string }
+          - { name: hero_name_light, label: Large name — light part, widget: string }
+          - { name: hero_subtitle, label: Homepage subtitle, widget: string }
+          - { name: featured_badge, label: Featured carousel badge, widget: string }
+          - { name: featured_caption, label: Featured carousel caption, widget: string }
+          - { name: logos_caption, label: Brand logos caption, widget: string }
+          - { name: work_section_label, label: Work section eyebrow, widget: string }
+          - { name: work_heading_lead, label: Work headline — bold part, widget: string }
+          - { name: work_heading_tail, label: Work headline — light part, widget: string }
+          - { name: about_section_label, label: About section eyebrow, widget: string }
+          - { name: about_headline, label: About headline (three lines), widget: text }
+          - { name: bio1, label: Biography paragraph 1, widget: text }
+          - { name: bio2, label: Biography paragraph 2, widget: text }
+          - { name: bio3, label: Biography paragraph 3, widget: text }
+          - { name: contact_section_label, label: Contact section eyebrow, widget: string }
+          - { name: contact_headline_bold, label: Contact headline — first line, widget: string }
+          - { name: contact_headline_light, label: Contact headline — second line, widget: string }
+          - { name: contact_intro, label: Contact introduction, widget: string }
+          - { name: contact_button, label: Contact button text, widget: string }
+          - { name: footer_tagline, label: Footer tagline, widget: string }
+
     fields:
       - { name: title, label: Project title, widget: string, required: true }
       - { name: brand, label: Client / brand, widget: string, required: false }
