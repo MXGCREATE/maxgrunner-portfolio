@@ -18,7 +18,7 @@ Before uploading a public site or public GitHub repository, verify that your Gor
 
 The portfolio content dashboard lives at `/admin/`, currently:
 
-`https://mxgcreate.github.io/maxgrunner-portfolio/admin/`
+`https://maxgrunner.com/admin/`
 
 It uses [Sveltia CMS](https://sveltiacms.app/) with the GitHub repository as the content store. The dashboard URL is discoverable on the public site, but only GitHub users with repository write access and a valid token can save changes. Do not put credentials into the repository or send them over chat.
 
@@ -42,7 +42,7 @@ GitHub Pages cannot perform a GitHub OAuth code exchange by itself. A friendlier
 
 The **source of truth** is `data/projects.json`, which `app.js` loads at runtime. `data/projects.js` is only a backward-compatibility fallback snapshot; the browser normally ignores it. The master project JSON is kept in manual display order: do not sort it by numeric `id` or stale `selected_work_order` values. The existing imported metadata fields are retained even if they are not shown in the editor.
 
-The image path resolver supports both GitHub Pages' project subpath and a custom root domain. After the domain switch, update `site_url` and `display_url` in `admin/config.yml` to your live custom domain.
+The image path resolver supports both the original GitHub Pages project subpath and the custom domain root. `site_url` and `display_url` in `admin/config.yml` are set to `https://maxgrunner.com/`.
 
 ### Safety / limitations
 
